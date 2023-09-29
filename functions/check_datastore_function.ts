@@ -47,7 +47,7 @@ export default SlackFunction(
     console.log("Datastore response", queryResp);
 
     if (!queryResp.ok) {
-      console.log("Error pulling from database!", queryResp.error);
+      console.error("Error pulling from database!", queryResp.error);
     }
 
     let mobile_device;
