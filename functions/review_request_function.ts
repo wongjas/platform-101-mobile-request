@@ -1,7 +1,6 @@
 import { DefineFunction, Schema, SlackFunction } from "deno-slack-sdk/mod.ts";
-
-export const APPROVE_ID = "approve_request";
-export const DENY_ID = "deny_request";
+const APPROVE_ID = "approve_request";
+const DENY_ID = "deny_request";
 
 export const ReviewRequestDefinition = DefineFunction({
   callback_id: "review_request_function",
@@ -82,7 +81,7 @@ export default SlackFunction(
     });
 
     if (!postResponse.ok) {
-      console.log("Error pulling from database!", postResponse.error);
+      console.error("Error pulling from database!", postResponse.error);
     }
 
     return { completed: false };
@@ -92,16 +91,11 @@ export default SlackFunction(
   async function ({ action, body, client }) {
     console.log("Incoming action handler invocation", action);
 
-    const approved = action.action_id === APPROVE_ID;
+    const approved: boolean = action.action_id === APPROVE_ID;
 
-    let approval_message;
-
-    if (approved) {
-      approval_message =
-        ":white_check_mark: Your request was approved! You'll be sent a new device soon.";
-    } else {
-      approval_message = ":x: I'm afraid that your request was denied.";
-    }
+    let approval_message = approved
+      ? ":white_check_mark: Your request was approved! You'll be sent a new device soon."
+      : ":x: I'm afraid that your request was denied.";
 
     // (OPTIONAL) Update the manager's message to remove the buttons and reflect the approval state.
     const msgUpdate = await client.chat.update({
@@ -133,7 +127,7 @@ export default SlackFunction(
     });
 
     if (!msgUpdate.ok) {
-      console.log("Error during manager chat.update!", msgUpdate.error);
+      console.error("Error during manager chat.update!", msgUpdate.error);
     }
 
     await client.functions.completeSuccess({
